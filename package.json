@@ -1,9 +1,9 @@
 {
-  "name": "th-manifest",
+  "name": "treeherder-manifest",
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
-  "repository": "mozilla-rpweb/th-manifest",
+  "repository": "mozilla-rpweb/treeherder-manifest",
   "author": "Eli Perelman <eli@eliperelman.com>",
   "license": "MIT",
   "config": {
