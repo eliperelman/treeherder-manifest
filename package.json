@@ -1,0 +1,31 @@
+{
+  "name": "th-manifest",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "repository": "mozilla-rpweb/th-manifest",
+  "author": "Eli Perelman <eli@eliperelman.com>",
+  "license": "MIT",
+  "config": {
+    "preset": "neutrino-preset-react"
+  },
+  "scripts": {
+    "start": "neutrino start",
+    "build": "neutrino build"
+  },
+  "devDependencies": {
+    "neutrino": "^3.0.3",
+    "neutrino-preset-react": "^2.1.0"
+  },
+  "dependencies": {
+    "bootstrap": "4.0.0-alpha.6",
+    "font-awesome": "^4.7.0",
+    "react": "^15.4.2",
+    "react-addons-css-transition-group": "^15.4.2",
+    "react-addons-transition-group": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-fontawesome": "^1.5.0",
+    "react-router-dom": "next",
+    "reactstrap": "^4.0.1"
+  }
+}
