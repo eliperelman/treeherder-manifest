@@ -8,6 +8,8 @@ import NotFound from './ui/NotFound';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.css';
 import './global.css';
+import { Provider } from 'react-redux';
+import { store, actions } from './redux/store';
 
 const App = () => (
   <BrowserRouter>
@@ -24,4 +26,8 @@ const App = () => (
   </BrowserRouter>
 );
 
-render(<App />, document.getElementById('root'));
+render((
+  <Provider store={store}>
+    <App actions={actions} />
+  </Provider>
+), document.getElementById('root'));
