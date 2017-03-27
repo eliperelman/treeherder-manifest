@@ -5,17 +5,20 @@ export const types = {
   RENDER_FILTERED_TESTS: 'RENDER_FILTERED_TESTS',
 };
 
-const host = 'https://treeherder.allizom.org/api/jobdetail';
+// TODO: When this app is part of Treeherder, we can get this from the
+// router / URL
+const treeherder = 'https://treeherder.allizom.org';
 const title = 'artifact%20uploaded';
 const value = 'mochitest-gl_errorsummary.log';
 // const value = 'plain-chunked_errorsummary.log';
 
 export const actions = {
-  updateTests: (pushId = 0) => ({
+  updateTests: (repo, pushId) => ({
     type: types.FETCH_TESTS,
     meta: {
       type: 'api',
-      url: `${host}/?push_id=${pushId}&title=${title}&value=${value}`,
+      url: `${treeherder}/api/jobdetail/?push_id=${pushId}&title=${title}&value=${value}`,
+      countsUrl: `${treeherder}/api/project/${repo}/resultset/${pushId}/status/`,
       method: 'GET',
     },
   }),

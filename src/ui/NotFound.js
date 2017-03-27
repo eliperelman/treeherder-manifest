@@ -6,7 +6,7 @@ const NotFound = () => (
     <Row>
       <Col>
         <Alert color="danger">
-          Missing required URL parameter for push ID.
+          Missing required URL parameters of <code>repo</code> and <code>revision</code>.
         </Alert>
       </Col>
     </Row>

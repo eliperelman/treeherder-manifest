@@ -11,15 +11,24 @@ import './global.css';
 import { Provider } from 'react-redux';
 import { store, actions } from './redux/store';
 
+function hasProps(search) {
+  const params = new URLSearchParams(search);
+  return (params.get('repo') && params.get('revision'));
+}
+
 const App = () => (
   <BrowserRouter>
     <div>
       <Navigation />
       <main>
         <Switch>
-          <Route exact path="/" component={NotFound} />
-          <Route exact path="/:pushId" component={Suites} />
+          <Route exact path="/" render={props => (
+            hasProps(props.location.search) ? React.createElement(Suites, props) : (
+              React.createElement(NotFound, props))
+          )} />
+          <Route name="search" path="?revision=:revision&repo=:repo" handler={Suites} />
           <Route exact path="/:pushId/tests/:testId" component={Test} />
+          <Route name="notfound" component={NotFound} />
         </Switch>
       </main>
     </div>

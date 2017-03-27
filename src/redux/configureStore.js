@@ -15,7 +15,7 @@ import * as pushStore from './modules/push';
  * If two failures have the same ``test`` value, with a different subtest, we will only
  * show one listing entry.
  */
-function transform(suites, failures) {
+function transform(suites, failures, jobId) {
   if (!failures.length) {
     return {};
   }
@@ -46,6 +46,7 @@ function transform(suites, failures) {
           intermittent: false,
           status: 'Failed',
           test,
+          jobId,
         },
         ] : suiteFailures), []);
 
@@ -58,7 +59,7 @@ function transform(suites, failures) {
     }, {});
 }
 
-function getErrorLines(text) {
+function getErrorLines(text, jobId) {
   const lines = text.split('\n');
 
   if (lines.length < 2) {
@@ -71,7 +72,7 @@ function getErrorLines(text) {
     line ? [...linesAcc, JSON.parse(line)] : linesAcc), []);
   const failures = jsonLines.length > 1 ? jsonLines.slice(1) : [];
 
-  return transform(jsonLines[0].tests, failures);
+  return transform(jsonLines[0].tests, failures, jobId);
 }
 
 function fullText(item) {
@@ -90,27 +91,31 @@ async function fetchPush(store, fetchOptions) {
   const { url } = fetchOptions;
   const response = await fetch(url, fetchOptions);
   const json = await response.json();
-  const newAction = {
-    type: pushStore.types.RENDER_PUSH,
-    payload: { push: json },
-  };
+  const [push] = json.results;
 
-  store.dispatch(newAction);
+  // render the push data
+  store.dispatch({
+    type: pushStore.types.RENDER_PUSH,
+    payload: { push },
+  });
+  // now fetch the test data for this push
+  store.dispatch(suitesStore.actions.updateTests(fetchOptions.repo, push.id));
 }
 
 async function fetchTests(store, fetchOptions) {
   // Will need to create a timer to re-fetch this at intervals.
-  const { url } = fetchOptions;
+  const { url, countsUrl } = fetchOptions;
   const response = await fetch(url, fetchOptions);
-  const json = await response.json();
+  const jobDetails = await response.json();
   // Here the json is the job_detail result.
   // We need to take each entry and query for the errorsummary.log
   // then take those and make an object out of it.
   const logs = await Promise
-    .all(json.results.map(res => res.url)
+    .all(jobDetails.results.map(res => res.url)
     .map(logUrl => fetch(logUrl)));
   // We now have each of the error summaries.  Convert them to error lines.
-  const textLogResults = await Promise.all(logs.map(log => log.text().then(getErrorLines)));
+  const textLogResults = await Promise.all(logs.map((log, idx) => log.text()
+      .then(item => getErrorLines(item, jobDetails.results[idx].job_id))));
   // Convert the error lines to an object that the UI can display.
   const suites = textLogResults.reduce((suiteAcc, result) => Object
     .entries(result)
@@ -118,18 +123,22 @@ async function fetchTests(store, fetchOptions) {
       ...acc,
       [suiteName]: [...acc[suiteName], ...tests],
     }), suiteAcc));
-  // Set the Failed count in the counts object
-  const counts = Object
-    .values(suites)
-    .reduce((acc, suite) => ({ ...acc, Failed: acc.Failed + suite.length }), {
-      Failed: 0,
-      Successful: 0,
-      Pending: 0,
-      'Not Running': 0,
-    });
   const fulltext = Object
     .entries(suites)
     .reduce((ftext, [key, value]) => ({ ...ftext, [key]: value.map(fullText) }), {});
+  // Tabulate the counts
+  const pushStatusResp = await fetch(countsUrl, fetchOptions);
+  const pushStatus = await pushStatusResp.json();
+  // We use most of the counts from the push status, but ``failed`` will be a count of
+  // the "tests" rather than jobs.  So we walk each suite(manifest) and count the failed tests.
+  // Note: this is in contrast to the "testfailed" entry coming from pushStatus.  Those are jobs.
+  const counts = {
+    failed: Object.values(suites).reduce((acc, suite) => acc + suite.length, 0),
+    success: 0,
+    pending: 0,
+    running: 0,
+    ...pushStatus,
+  };
 
   // Dispatch an action that causes the UI to re-render with the new state.
   store.dispatch({
@@ -166,16 +175,19 @@ const testDataMiddleware = store => next => action => {
     return next(action);
   }
 
+  const consumed = { ...action };
+  delete consumed.meta;
+
   switch (action.type) {
     case suitesStore.types.FETCH_TESTS:
       fetchTests(store, { ...action.meta });
-      break;
+      return next(consumed);
     case suitesStore.types.FILTER_TESTS:
       filterTests(store, { ...action.meta });
-      break;
+      return next(consumed);
     case pushStore.types.FETCH_PUSH:
       fetchPush(store, { ...action.meta });
-      break;
+      return next(consumed);
     default:
       break;
   }

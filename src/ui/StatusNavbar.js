@@ -29,19 +29,19 @@ const StatusNavbar = props => (
     </Nav>
 
     <span className="navbar-text">
-      <Badge color="success">{props.counts.Successful} Successful</Badge>
+      <Badge color="danger">{props.counts.failed} Failed Tests</Badge>
     </span>
 
     <span className="navbar-text">
-      <Badge color="danger">{props.counts.Failed} Failed</Badge>
+      <Badge color="success">{props.counts.success} Successful Jobs</Badge>
     </span>
 
     <span className="navbar-text">
-      <Badge color="info">{props.counts.Pending} Pending</Badge>
+      <Badge color="info">{props.counts.running} Running Jobs</Badge>
     </span>
 
     <span className="navbar-text">
-      <Badge>{props.counts['Not Running']} Not Running</Badge>
+      <Badge>{props.counts.pending} Pending Jobs</Badge>
     </span>
   </Navbar>
 );

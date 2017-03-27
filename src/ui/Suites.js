@@ -8,18 +8,32 @@ import { colors } from '../mock';
 import { connect } from 'react-redux';
 import { store, actions } from '../redux/store';
 
-const mapStateToProps = ({ suites }) => ({
+const mapStateToProps = ({ suites, push }) => ({
   rowData: suites.rowData,
   fulltext: suites.fulltext,
   suites: suites.suites,
+  revision: push.push.revision,
+  treeherder: push.treeherder,
+  pushId: push.push.id,
 });
 
 export class Suites extends React.Component {
   componentDidMount() { // eslint-disable-line class-methods-use-this
-    const { pushId } = this.props.match.params;
+    const params = new URLSearchParams(this.props.location.search);
+    const repo = params.get('repo');
+    const revision = params.get('revision');
 
-    store.dispatch(actions.suites.updateTests(pushId));
-    store.dispatch(actions.push.updatePush(pushId));
+    store.dispatch(actions.push.updatePush(repo, revision));
+
+    // Update the tests every two minutes.
+    this.testTimerId = setInterval(
+      () => store.dispatch(actions.suites.updateTests(repo, this.props.pushId)),
+      120000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.testTimerId);
   }
 
   filter(e) {
@@ -89,7 +103,8 @@ export class Suites extends React.Component {
                       <Icon name="file-text-o" title="Show log for test" />
                     </td>
                     <td style={{ width: '100%', fontSize: '.8rem', lineHeight: '1.6rem' }}>
-                      <Link to={`${this.props.location.pathname}/tests/${btoa(item.test)}`}>
+                      <Link to={`${this.props.treeherder}/#/jobs?repo=mozilla-inbound&revision=${this.props.revision}&selectedJob=${item.jobId}`}
+                              target="_blank">
                         {item.test}
                       </Link>
                     </td>

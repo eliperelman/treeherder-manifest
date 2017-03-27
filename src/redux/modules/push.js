@@ -1,17 +1,21 @@
 export const types = {
   FETCH_PUSH: 'FETCH_PUSH',
   RENDER_PUSH: 'RENDER_PUSH',
-};
 
-const host = 'https://treeherder.allizom.org/api/project/mozilla-inbound/resultset';
+};
+// TODO: When this app is part of Treeherder, we can get this from the
+// router / URL
+const treeherder = 'https://treeherder.allizom.org';
 
 export const actions = {
-  updatePush: (pushId = 0) => ({
+  updatePush: (repo, revision) => ({
     type: types.FETCH_PUSH,
     meta: {
       type: 'api',
-      url: `${host}/${pushId}/`,
+      url: `${treeherder}/api/project/${repo}/resultset/?revision=${revision}`,
       method: 'GET',
+      repo,
+      revision,
     },
   }),
 };
@@ -24,6 +28,7 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         push: action.payload.push,
+        treeherder,
       };
     default:
       return state;

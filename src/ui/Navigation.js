@@ -3,7 +3,6 @@ import { Route } from 'react-router-dom';
 import { Nav, Navbar, NavbarToggler, NavbarBrand, Collapse, NavItem } from 'reactstrap';
 import Icon from 'react-fontawesome';
 import NavLink from './NavLink';
-import { user } from '../mock';
 import logoUrl from '../logo.png';
 
 export default class Navigation extends React.Component {
@@ -35,9 +34,6 @@ export default class Navigation extends React.Component {
               </Route>
             </NavItem>
           </Nav>
-          <span className="navbar-text">
-            <Icon name="user-circle-o" /> {user}
-          </span>
         </Collapse>
       </Navbar>
     );
