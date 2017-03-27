@@ -121,7 +121,7 @@ async function fetchTests(store, fetchOptions) {
     .entries(result)
     .reduce((acc, [suiteName, tests]) => ({
       ...acc,
-      [suiteName]: [...acc[suiteName], ...tests],
+      [suiteName]: [...(acc[suiteName] || []), ...tests],
     }), suiteAcc));
   const fulltext = Object
     .entries(suites)

@@ -6,16 +6,33 @@
   "repository": "mozilla-rpweb/treeherder-manifest",
   "author": "Eli Perelman <eli@eliperelman.com>",
   "license": "MIT",
-  "config": {
-    "preset": "neutrino-preset-react"
+  "neutrino": {
+    "use": [
+      "neutrino-preset-react"
+    ],
+    "options": {
+      "html": {
+        "title": "Treeherder Manifest Prototype",
+        "meta": [
+          {
+            "name": "description",
+            "content": "Treeherder Manifest Prototype"
+          },
+          {
+            "name": "author",
+            "content": "Mozilla Treeherder"
+          }
+        ]
+      }
+    }
   },
   "scripts": {
     "start": "neutrino start",
     "build": "neutrino build"
   },
   "devDependencies": {
-    "neutrino": "^3.0.3",
-    "neutrino-preset-react": "^2.1.0"
+    "neutrino": "^5.0.1",
+    "neutrino-preset-react": "^5.0.1"
   },
   "dependencies": {
     "bootstrap": "4.0.0-alpha.6",
@@ -25,10 +42,11 @@
     "react-addons-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-fontawesome": "^1.5.0",
+    "react-hot-loader": "3.0.0-beta.6",
     "react-redux": "^5.0.3",
     "react-router": "^4.0.0",
-    "react-router-dom": "next",
-    "reactstrap": "^4.0.1",
+    "react-router-dom": "^4.0.0",
+    "reactstrap": "^4.3.0",
     "redux": "3.6.0"
   }
 }

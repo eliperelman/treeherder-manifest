@@ -49,7 +49,7 @@ export class Suites extends React.Component {
         <StatusNavbar />
         <StatusProgress />
         <Container fluid style={{ marginBottom: '.5rem', marginTop: '5rem' }}>
-          <Form>
+          <Form onSubmit={e => e.preventDefault()}>
             <Row>
               <Col md={3} sm={12} xs={12} style={{ textAlign: 'right' }}>
                 Known intermittent failure&nbsp;&nbsp;
