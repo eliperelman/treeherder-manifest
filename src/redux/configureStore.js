@@ -7,6 +7,8 @@ import {
 import * as suitesStore from './modules/suites';
 import * as pushStore from './modules/push';
 
+const request = (url, options) => fetch(url.replace('http:', 'https:'), options);
+
 // ETL Layer
 /**
  * Transform failures to an object with the key being the name
@@ -89,7 +91,7 @@ function fullText(item) {
 
 async function fetchPush(store, fetchOptions) {
   const { url } = fetchOptions;
-  const response = await fetch(url, fetchOptions);
+  const response = await request(url, fetchOptions);
   const json = await response.json();
   const [push] = json.results;
 
@@ -105,14 +107,14 @@ async function fetchPush(store, fetchOptions) {
 async function fetchTests(store, fetchOptions) {
   // Will need to create a timer to re-fetch this at intervals.
   const { url, countsUrl } = fetchOptions;
-  const response = await fetch(url, fetchOptions);
+  const response = await request(url, fetchOptions);
   const jobDetails = await response.json();
   // Here the json is the job_detail result.
   // We need to take each entry and query for the errorsummary.log
   // then take those and make an object out of it.
   const logs = await Promise
     .all(jobDetails.results.map(res => res.url)
-    .map(logUrl => fetch(logUrl)));
+    .map(logUrl => request(logUrl)));
   // We now have each of the error summaries.  Convert them to error lines.
   const textLogResults = await Promise.all(logs.map((log, idx) => log.text()
       .then(item => getErrorLines(item, jobDetails.results[idx].job_id))));
@@ -127,7 +129,7 @@ async function fetchTests(store, fetchOptions) {
     .entries(suites)
     .reduce((ftext, [key, value]) => ({ ...ftext, [key]: value.map(fullText) }), {});
   // Tabulate the counts
-  const pushStatusResp = await fetch(countsUrl, fetchOptions);
+  const pushStatusResp = await request(countsUrl, fetchOptions);
   const pushStatus = await pushStatusResp.json();
   // We use most of the counts from the push status, but ``failed`` will be a count of
   // the "tests" rather than jobs.  So we walk each suite(manifest) and count the failed tests.

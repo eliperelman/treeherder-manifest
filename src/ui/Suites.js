@@ -77,11 +77,10 @@ export class Suites extends React.Component {
           <thead>
             <tr>
               <th key="status" style={{ paddingLeft: '1rem', textAlign: 'center' }}>Status</th>
-              <th key="open-log" style={{ textAlign: 'center' }}>View Log</th>
               <th key="test">Test</th>
             </tr>
           </thead>
-            {Object.entries(this.props.rowData).map(([name, rows], tkey) => (
+            {Object.keys(this.props.rowData).length ? Object.entries(this.props.rowData).map(([name, rows], tkey) => (
               <tbody key={tkey}>
                 <tr style={{ backgroundColor: '#f9f9f9' }}>
                   <td colSpan={4} style={{ textAlign: 'center', fontSize: '1.5rem' }}>
@@ -92,26 +91,32 @@ export class Suites extends React.Component {
                 </tr>
                 {rows.map((item, key) => (
                   <tr key={key}>
-                    <td style={{ minWidth: '8rem', fontSize: '1rem' }}>
+                    <td style={{ minWidth: '8rem', fontSize: '1rem', textAlign: 'center', }}>
                       <Badge size="sm" color={colors[item.status]} style={{ fontWeight: 400, fontSize: '.8rem', margin: '0 .5rem' }}>
                         {item.status}
                       </Badge>
                       {item.intermittent && <Icon name="bug" style={{ color: '#d78236', verticalAlign: 'text-bottom', marginRight: '.5rem' }} />}
                       {item.infra && <Icon name="chain-broken" style={{ color: '#db3737', verticalAlign: 'text-bottom' }} />}
                     </td>
-                    <td style={{ minWidth: '6rem', textAlign: 'center', fontSize: '1rem' }}>
-                      <Icon name="file-text-o" title="Show log for test" />
-                    </td>
                     <td style={{ width: '100%', fontSize: '.8rem', lineHeight: '1.6rem' }}>
-                      <Link to={`${this.props.treeherder}/#/jobs?repo=mozilla-inbound&revision=${this.props.revision}&selectedJob=${item.jobId}`}
-                              target="_blank">
+                      <Link
+                        to={`${this.props.treeherder}/#/jobs?repo=mozilla-inbound&revision=${this.props.revision}&selectedJob=${item.jobId}`}
+                        target="_blank">
                         {item.test}
                       </Link>
                     </td>
                   </tr>
                 ))}
               </tbody>
-            ))
+            )) : (
+              <tbody>
+                <tr>
+                  <td colSpan={4} style={{ textAlign: 'center', paddingTop: '2rem' }}>
+                    <Icon name="spinner" size="2x" spin />
+                  </td>
+                </tr>
+              </tbody>
+            )
           }
         </Table>
       </div>
