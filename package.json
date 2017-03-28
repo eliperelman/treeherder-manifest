@@ -24,11 +24,11 @@
     },
     "options": {
       "html": {
-        "title": "Treeherder Manifest : Beta",
+        "title": "Treeherder TestGroup - Experimental",
         "meta": [
           {
             "name": "description",
-            "content": "Treeherder Manifest : Beta"
+            "content": "Treeherder TestGroup - Experimental"
           },
           {
             "name": "author",

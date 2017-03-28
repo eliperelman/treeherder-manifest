@@ -19,7 +19,7 @@ export default class Navigation extends React.Component {
         <NavbarBrand href="/">
           <img src={logoUrl} className="img-fluid" style={{ maxHeight: 26, verticalAlign: 'baseline' }} />
           <Badge size="sm" color="info" style={{ marginLeft: '1rem', verticalAlign: 'top', marginTop: '.25rem' }}>
-            alpha
+            experimental
           </Badge>
         </NavbarBrand>
         <Collapse isOpen={this.state.isOpen} navbar>
